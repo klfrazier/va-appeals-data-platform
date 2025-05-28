@@ -1,0 +1,87 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table factSupplementalClaim {
+  DateReceivedKey integer [note:'Key to date dimension playing role for when the supplemental claim for was received.']
+  DatePriorDecisionDateKey integer [note:'Key to date dimension playing role for the prior decision date.']
+  DateClosedKey integer [note:'Key to date dimension playing role for when the issues was closed or decided.']
+  VeteranKey integer [note:'Key to veteran dimension.']
+  IssueCategoryKey integer [note:'Key to Issues Category dimension']
+  BenefitTypeKey integer [note:'Key to benefit type dimension']
+  IssueDescriptionKey integer [note:'Key to issue description dimension.']
+  ClosedStatusKey integer [note:'Key to closed status dimension']
+  IssueCount integer [default: '1']
+  TotalCompletionDays integer [default: '0', note: 'Total days from receipt to completion.']
+  TotalWaitingDays integer [default: '0', note: 'Total days from receipt that issue has been waiting.']
+  SupplementalClaimId varchar [note: 'Degenerate Dimension used as a primary key back to system of record.']
+
+   Note: '''Each request issue represents the veteran response to a rating or decision issue.
+   
+Fact Table Type: Transaction
+
+Grain: 1 row per supplemental claim review issue
+
+Issues are stored in the request_issues table in Caseflow for Appeals, HigherLevelReview, and Supplemental Claims. Although these processes are very similiar and could live in the same fact table (consolidated fact table), it was decided to place them into a single process fact table due to each being a separate process driven by a separate form. This would also permit creating metrics separately.
+'''
+    }
+
+Table dimDate{
+  DateKey integer [primary key ]
+  DateName varchar
+  DayofWeekNumber smallint
+  DayName varchar
+  DayofMonth smallint
+  DayofYear integer
+  WeekNumber smallint
+  MonthName varchar
+  MonthNumber smallint
+  CalendarQuarter smallint
+  CalendarYear integer
+  FiscalYear varchar
+  DayofWeekCategory varchar
+  ShortMonthName varchar
+  IsLastDayofMonth varchar
+  CalendarYearMonth varchar
+}
+
+Table dimVeteran {
+  VeteranKey integer [primary key]
+  FirstName varchar
+  LastName varchar
+  FileNumber varchar
+  MiddleName varchar
+  BirthDate date
+}
+
+Table dimBenefitType{
+  BenefitTypeKey integer [primary key]
+  BenefitType varchar(20)
+}
+Table dimIssueDescription{
+  IssueDescriptionKey integer [primary key]
+  IssueDescription varchar(255)
+}
+Table dimClosedStatus{
+  ClosedStatuskey integer [primary key]
+  ClosedStatusName varchar(50)
+}
+Table dimIssueCategory{
+  IssueCategoryKey integer [primary key]
+  IssueCategoryDescription varchar(255)
+}
+
+Ref: "dimDate"."DateKey" < "factSupplementalClaim"."DateReceivedKey"
+
+Ref: "dimDate"."DateKey" < "factSupplementalClaim"."DatePriorDecisionDateKey"
+
+Ref: "dimDate"."DateKey" < "factSupplementalClaim"."DateClosedKey"
+
+Ref: "dimVeteran"."VeteranKey" < "factSupplementalClaim"."VeteranKey"
+
+Ref: "dimBenefitType"."BenefitTypeKey" < "factSupplementalClaim"."BenefitTypeKey"
+
+Ref: "dimIssueDescription"."IssueDescriptionKey" < "factSupplementalClaim"."IssueDescriptionKey"
+
+Ref: "dimClosedStatus"."ClosedStatuskey" < "factSupplementalClaim"."ClosedStatusKey"
+
+Ref: "dimIssueCategory"."IssueCategoryKey" < "factSupplementalClaim"."IssueCategoryKey"
