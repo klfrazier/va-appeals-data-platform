@@ -1,0 +1,5 @@
+# CODEOWNERS Testing
+
+/dbdiagram    klfrazier
+*.md          klfrazier
+*.dbml        klfrazier
