@@ -1,5 +1,8 @@
-# CODEOWNERS Testing
+# CODEOWNERS for Appeal Data Platform Repository
 
-/dbdiagram    klfrazier
-*.md          klfrazier
-*.dbml        klfrazier
+# Data models & Design documents
+/documentation/diagrams/    @klfrazier
+/documentation/documents/   @klfrazier
+
+# Default fallback owner for all files not explicitly listed
+*       @klfrazier
